@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bandhigga Ciyaaraha Todobaadka</title>
+<style>
+:root{--bg:#EEF4FF;--card:#fff;--ink:#0B1B3F;--mut:#5C6B8C;--blue:#1E6BFF;--navy:#0B1B3F;--sky:#DCE8FF;--gold:#F2B705;--line:#D5E1F7}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{background:var(--navy);color:#fff;padding:18px 16px 0}
+header h1{margin:0;font-size:22px}
+header p{margin:2px 0 12px;color:#A9C3FF;font-size:13px}
+nav{display:flex;gap:4px;overflow-x:auto}
+nav button{border:0;background:transparent;color:#A9C3FF;font:600 14px system-ui;padding:10px 12px;border-radius:10px 10px 0 0;white-space:nowrap;cursor:pointer}
+nav button.on{background:var(--bg);color:var(--blue)}
+main{max-width:720px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+h2{margin:0 0 10px;font-size:19px}
+input{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font:inherit;margin-bottom:10px;background:var(--bg);color:var(--ink)}
+.btn{border:0;background:var(--blue);color:#fff;font:700 15px system-ui;padding:12px 16px;border-radius:10px;cursor:pointer}
+.btn.g{background:var(--sky);color:var(--blue)}.btn.v{background:var(--gold);color:#1a1300}
+.msg{color:#C0392B;font-size:14px}.ok{color:#1E8E4E}
+.row{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px}
+.row.f{background:var(--sky);border-color:var(--blue)}
+.rk{font-weight:800;width:22px}.av{width:40px;height:40px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:700;flex:none}
+.vip .av{background:var(--gold);color:#1a1300}
+.who{flex:1;min-width:0}.who b{display:block;overflow-wrap:anywhere}.who small{color:var(--mut)}.pts{font-size:22px;font-weight:800}
+.tabs{display:inline-flex;background:var(--sky);border-radius:10px;padding:3px;margin-bottom:10px}
+.tabs button{border:0;background:transparent;color:var(--mut);padding:7px 12px;border-radius:8px;font:600 14px system-ui;cursor:pointer}
+.tabs button.on{background:var(--card);color:var(--ink)}
+.fx{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
+.fx .t:first-child{text-align:right}.fx small{display:block;color:var(--mut);font-size:12px}
+.fx input{width:46px;text-align:center;margin:0;padding:8px}.sc{display:flex;gap:5px;align-items:center}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.top small{color:var(--mut);overflow-wrap:anywhere}
+.mc{border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px;background:var(--card)}
+.mh{display:flex;gap:10px;align-items:center;color:var(--mut);font-size:14px;margin-bottom:10px}
+.n{background:var(--blue);color:#fff;font-weight:800;padding:8px 10px;border-radius:8px}
+.mt{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px}
+.tm{display:flex;align-items:center;gap:8px;color:var(--blue);font-weight:700}.tm.r{justify-content:flex-end;text-align:right}
+.tm img,.ph{width:38px;height:38px;object-fit:contain;flex:none}.vs{color:var(--mut);font-weight:700}
+.mb{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.st{border:1px solid #BFE3A8;background:#F0FBE8;color:#3A7D12;border-radius:999px;padding:3px 12px;font-size:14px}
+.st.l{background:#F3F5F9;border-color:var(--line);color:var(--mut)}.st.s{background:var(--sky);border-color:var(--blue);color:var(--blue)}
+.bd{border:1px solid var(--blue);background:var(--sky);color:var(--blue);border-radius:999px;padding:3px 12px;font-size:13px;white-space:nowrap}
+.wide{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:420px}
+td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:center;font-size:13px}th{color:var(--blue)}
+td:first-child,th:first-child{text-align:left;white-space:nowrap}.np{color:var(--mut)}
+</style>
+</head>
+<body>
+<header><h1>Bandhigga Ciyaaraha Todobaadka</h1><p>Saadaalinta 2026/2027</p><nav id="nav"></nav></header>
+<main id="app">Waa la soo rarayaa...</main>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import{getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,sendPasswordResetEmail,updateProfile,signOut}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import{getFirestore,collection,getDocs,getDoc,doc,writeBatch,Timestamp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyDBj54IMgA_MPpTHesuRzFXwXGAOJPXzYQ",authDomain:"bandhigga-saadaasha-webb.firebaseapp.com",projectId:"bandhigga-saadaasha-webb",appId:"1:490396598591:web:37e2e2e23c2a01a60c538a"});
+const auth=getAuth(app),db=getFirestore(app);
+const LOCK=90*60*1000;
+let S={user:null,vip:false,fx:[],pr:[],champ:null,tab:'fans',per:'Xilli',mode:'login',msg:'',ok:''};
+const $=id=>document.getElementById(id);
+const ms=t=>t&&t.toMillis?t.toMillis():0;
+const nm=u=>u.displayName||u.email.split('@')[0];
+async function load(){
+ try{
+  S.fx=(await getDocs(collection(db,'fixtures'))).docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>ms(a.kickoff)-ms(b.kickoff));
+  S.pr=(await getDocs(collection(db,'predictions'))).docs.map(d=>d.data());
+  const c=await getDoc(doc(db,'meta','champion'));S.champ=c.exists()?c.data():null;
+  const v=await getDoc(doc(db,'vip',S.user.email.toLowerCase()));S.vip=v.exists();
+ }catch(e){S.msg='Xogta lama soo qaadi karin: '+e.code}
+ draw();
+}
+onAuthStateChanged(auth,u=>{S.user=u;S.msg='';if(u)load();else draw()});
+function nav(){const t=[['fans','Fans'],['vip','⭐ VIP'],['win','Guulaystayaasha'],['champ','Horyaalka']];
+ $('nav').innerHTML=S.user?t.map(([k,l])=>`<button class="${S.tab===k?'on':''}" onclick="T('${k}')">${l}</button>`).join(''):''}
+window.T=k=>{S.tab=k;S.msg='';S.ok='';draw()};
+window.P=p=>{S.per=p;draw()};
+window.M=m=>{S.mode=m;S.msg='';draw()};
+function week(){const n=S.fx.find(f=>!f.done);return n?n.week:(S.fx.length?S.fx[S.fx.length-1].week:null)}
+function stand(sec,per){
+ const wk=week(),done=S.fx.filter(f=>f.done),last=done[done.length-1],lm=last?new Date(ms(last.kickoff)).getMonth():-1;
+ const F={};done.forEach(f=>{if(per==='Todobaad'&&f.week!==wk)return;if(per==='Bil'&&new Date(ms(f.kickoff)).getMonth()!==lm)return;F[f.id]=f});
+ const R={};S.pr.filter(p=>p.section===sec&&F[p.fx]).forEach(p=>{const f=F[p.fx],r=R[p.uid]=R[p.uid]||{n:p.name,pts:0,pl:0,ex:0,ok:0};
+  r.pl++;const e=p.h===f.hs&&p.a===f.as,o=Math.sign(p.h-p.a)===Math.sign(f.hs-f.as);
+  if(e){r.pts+=3;r.ex++;r.ok++}else if(o){r.pts++;r.ok++}});
+ return Object.values(R).sort((a,b)=>b.pts-a.pts||b.ex-a.ex);
+}
+function rows(L,vip){return L.length?L.map((r,i)=>`<div class="row ${i?'':'f'}"><div class="rk">${i+1}</div><div class="av">${r.n[0].toUpperCase()}</div><div class="who"><b>${r.n}</b><small>${r.pl} la saadaaliyay · ${r.ok} sax · ${r.ex} dhamaystiran</small></div><div class="pts">${r.pts}</div></div>`).join(''):'<p class="msg" style="color:var(--mut)">Weli natiijo ma jirto.</p>'}
+function pers(){return`<div class="tabs">${['Todobaad','Bil','Xilli'].map(x=>`<button class="${S.per===x?'on':''}" onclick="P('${x}')">${x}</button>`).join('')}</div>`}
+const cd=(f,s)=>s==='h'?(f.hc||f.home.slice(0,3).toUpperCase()):(f.ac||f.away.slice(0,3).toUpperCase());
+const cr=u=>u?`<img src="${u}" alt="">`:'<span class="ph"></span>';
+function pitch(sec){
+ const wk=week(),L=S.fx.filter(f=>f.week===wk),now=Date.now();
+ if(!L.length)return'<div class="card"><h2>Saadaalinta</h2><p>Ciyaaraha todobaadkan weli lama soo gelin.</p></div>';
+ const mine={};S.pr.filter(p=>p.uid===S.user.uid&&p.section===sec).forEach(p=>mine[p.fx]=p);
+ const open=L.some(f=>!mine[f.id]&&ms(f.kickoff)-LOCK>now);
+ return`<div class="top"><h2 style="margin:0">Ciyaaraha todobaadkan</h2><span class="bd">${wk} · ${open?'furan':'xiran'}</span></div><p style="color:var(--mut);margin:0 0 10px;font-size:14px">Ciyaar kasta waxay xirmaysaa 1 saac iyo badh ka hor bilawga.</p>`+
+ L.map((f,i)=>{const m=mine[f.id],lk=ms(f.kickoff)-LOCK<=now,dis=m||lk,d=new Date(ms(f.kickoff)).toLocaleString('en-GB',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+  return`<div class="mc"><div class="mh"><span class="n">${String(i+1).padStart(2,'0')}</span><span>${d} · ${f.league||''}</span></div><div class="mt"><div class="tm">${cr(f.homeCrest)}<b>${f.home}</b></div><span class="vs">v</span><div class="tm r"><b>${f.away}</b>${cr(f.awayCrest)}</div></div><div class="mb"><div class="sc"><input id="h${f.id}" inputmode="numeric" maxlength="2" ${dis?'disabled':''} value="${m?m.h:''}"><b>-</b><input id="a${f.id}" inputmode="numeric" maxlength="2" ${dis?'disabled':''} value="${m?m.a:''}"></div><span class="st ${m?'s':lk?'l':''}">${m?'La keydiyay':lk?'Xiran':'Furan'}</span></div></div>`}).join('')+
+ `<p class="msg">${S.msg}</p><p class="msg ok">${S.ok}</p>${open?`<button class="btn ${sec==='vip'?'v':''}" onclick="SUB('${sec}')">Submit saadaalinta</button><p style="font-size:13px;color:var(--mut)">Marka aad Submit taabato, mar dambe lama beddeli karo.</p>`:''}`}
+function board(sec){
+ const wk=week(),L=S.fx.filter(f=>f.week===wk),now=Date.now(),U={};
+ S.pr.filter(p=>p.section===sec).forEach(p=>U[p.uid]=p.name);
+ const ids=Object.keys(U).sort((a,b)=>U[a].localeCompare(U[b]));if(!ids.length||!L.length)return'';
+ const any=L.some(f=>ms(f.kickoff)-LOCK<=now);
+ return`<div class="card"><div class="top"><h2 style="margin:0">${wk} prediction board</h2><span class="bd">${any?'Picks visible':'Picks hidden'}</span></div><div class="wide"><table><tr><th>Ciyaar</th>${ids.map(u=>`<th>${U[u]}</th>`).join('')}</tr>${L.map((f,i)=>`<tr><td>${String(i+1).padStart(2,'0')} ${cd(f,'h')} v ${cd(f,'a')}</td>${ids.map(u=>{const p=S.pr.find(x=>x.uid===u&&x.fx===f.id&&x.section===sec);
+  return`<td>${!p?'<span class="np">No pick yet</span>':ms(f.kickoff)-LOCK>now&&u!==S.user.uid?'🔒':`<b>${p.h>p.a?cd(f,'h'):p.h<p.a?cd(f,'a'):'DRAW'}</b><br>${p.h}–${p.a}`}</td>`}).join('')}</tr>`).join('')}</table></div></div>`}
+window.SUB=async sec=>{
+ const wk=week(),now=Date.now(),b=writeBatch(db);let n=0;
+ const mine=new Set(S.pr.filter(p=>p.uid===S.user.uid&&p.section===sec).map(p=>p.fx));
+ for(const f of S.fx.filter(f=>f.week===wk)){
+  if(mine.has(f.id)||ms(f.kickoff)-LOCK<=now)continue;
+  const h=$('h'+f.id).value.trim(),a=$('a'+f.id).value.trim();
+  if(!/^\d{1,2}$/.test(h)||!/^\d{1,2}$/.test(a)){S.msg='Buuxi dhamaan ciyaaraha (tirooyin kaliya).';return draw()}
+  b.set(doc(db,'predictions',S.user.uid+'_'+sec+'_'+f.id),{uid:S.user.uid,name:nm(S.user),fx:f.id,week:wk,h:+h,a:+a,section:sec,at:Timestamp.now()});n++}
+ if(!n)return;
+ if(!confirm('Ma hubtaa? Mar dambe lama beddeli karo.'))return;
+ try{await b.commit();S.ok='La keydiyay ✅';S.msg='';await load()}catch(e){S.msg='Lama keydin karin ('+e.code+'). Waqtiga ciyaar ayaa laga yaabaa inuu dhamaaday.';draw()}};
+function auth_(){const su=S.mode==='signup';
+ return`<div class="card"><h2>${su?'Fur akoon':S.mode==='reset'?'Dib u deji furaha sirta ah':'Gal akoonkaaga'}</h2>
+ <input id="e" type="email" placeholder="Gmail-kaaga">${su?'<input id="u" placeholder="Magac (username)">':''}${S.mode==='reset'?'':'<input id="p" type="password" placeholder="Furaha sirta ah (6+ xaraf)">'}
+ <p class="msg">${S.msg}</p><p class="msg ok">${S.ok}</p><button class="btn" onclick="AUTH()">${su?'Fur akoon':S.mode==='reset'?'Ii dir link':'Gal'}</button>
+ <p>${S.mode==='login'?`<a href="#" onclick="M('signup');return false">Akoon cusub</a> · <a href="#" onclick="M('reset');return false">Ma illowday furaha?</a>`:`<a href="#" onclick="M('login');return false">Dib u laabo</a>`}</p></div>`}
+window.AUTH=async()=>{
+ const e=$('e').value.trim(),p=$('p')?$('p').value:'';S.msg='';S.ok='';
+ try{
+  if(S.mode==='reset'){await sendPasswordResetEmail(auth,e);S.ok='Link ayaa lagu soo diray emailkaaga.';return draw()}
+  if(S.mode==='signup'){const u=$('u').value.trim();if(!u){S.msg='Geli magac.';return draw()}const c=await createUserWithEmailAndPassword(auth,e,p);await updateProfile(c.user,{displayName:u})}
+  else await signInWithEmailAndPassword(auth,e,p);
+ }catch(x){S.msg={'auth/invalid-credential':'Gmail ama furaha sirta ah waa khaldan yihiin.','auth/email-already-in-use':'Gmail-kan horey ayaa loo isticmaalay.','auth/weak-password':'Furaha sirta ah waa ugu yaraan 6 xaraf.','auth/invalid-email':'Gmail-ku sax ma aha.'}[x.code]||x.code;draw()}};
+function winners(sec,key){const wk={};S.fx.filter(f=>f.done).forEach(f=>{const k=key(f);(wk[k]=wk[k]||[]).push(f.id)});
+ return Object.entries(wk).map(([k,ids])=>{const R={};S.pr.filter(p=>p.section===sec&&ids.includes(p.fx)).forEach(p=>{const f=S.fx.find(x=>x.id===p.fx),r=R[p.uid]=R[p.uid]||{n:p.name,pts:0,ex:0};
+  if(p.h===f.hs&&p.a===f.as){r.pts+=3;r.ex++}else if(Math.sign(p.h-p.a)===Math.sign(f.hs-f.as))r.pts++});
+  const t=Object.values(R).sort((a,b)=>b.pts-a.pts||b.ex-a.ex)[0];return t?`<div class="row"><div class="who"><b>${k}</b><small>${t.n}</small></div><div class="pts">${t.pts}</div></div>`:''}).join('')}
+function draw(){
+ nav();const A=$('app');
+ if(!S.user){A.innerHTML=auth_();return}
+ const top=`<div class="top"><div><b>${nm(S.user)}</b><br><small>${S.user.email}</small></div><button class="btn g" onclick="OUT()">Ka bax</button></div>`;
+ let h=top;
+ if(S.tab==='vip'||S.tab==='fans'){const sec=S.tab;
+  if(sec==='vip'&&!S.vip)h+='<div class="card"><h2>🔒 VIP</h2><p>Qaybtan waxaa soo geli kara kaliya dadka la doortay.</p></div>';
+  else h+=`<div class="${sec}">`+pitch(sec)+board(sec)+`<div class="card"><h2>Miiska dhibcaha</h2>${pers()}${rows(stand(sec,S.per))}</div></div>`}
+ else if(S.tab==='win'){const sec=S.vip?'vip':'fans';
+  h+=`<div class="card"><h2>Guulaystayaasha todobaadka</h2>${winners(sec,f=>f.week)||'<p>Weli ma jiro.</p>'}</div><div class="card"><h2>Guulaystayaasha bisha</h2>${winners(sec,f=>new Date(ms(f.kickoff)).toLocaleString('so',{month:'long',year:'numeric'}))||'<p>Weli ma jiro.</p>'}</div>`}
+ else h+=`<div class="card"><h2>👑 Horyaalkii xilligii hore</h2><p>${S.champ?S.champ.name+(S.champ.season?' · '+S.champ.season:''):'Weli lama dhawaaqin.'}</p></div>`;
+ if(S.tab!=='vip'&&S.tab!=='fans')S.msg=S.msg;
+ A.innerHTML=h+(S.msg&&!['vip','fans'].includes(S.tab)?`<p class="msg">${S.msg}</p>`:'')}
+window.OUT=()=>signOut(auth);
+draw();
+</script>
+</body>
+</html>
