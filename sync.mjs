@@ -4,7 +4,7 @@ import {getFirestore,Timestamp} from 'firebase-admin/firestore';
 initializeApp({credential:cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT))});
 const db=getFirestore();
 
-const MAX=10, START_GW=1;
+const MAX=14, START_GW=1;
 const LEAGUES={'eng.1':'Premier League','esp.1':'La Liga','ita.1':'Serie A','uefa.champions':'Champions League','uefa.europa':'Europa League'};
 const BIG=['arsenal','chelsea','liverpool','manchester city','manchester united','tottenham','newcastle','aston villa','west ham','brighton',
 'barcelona','real madrid','atletico madrid','sevilla','villarreal','athletic club','real sociedad',
@@ -13,7 +13,9 @@ const BIG=['arsenal','chelsea','liverpool','manchester city','manchester united'
 'benfica','porto','sporting cp','ajax','psv','celtic','galatasaray','fenerbahce'];
 const FIX={'Internazionale':'Inter Milan','Atlético Madrid':'Atlético Madrid','Bayern München':'Bayern Munich','AS Roma':'Roma'};
 const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/-/g,' ');
+const TOP=['arsenal','chelsea','liverpool','manchester city','manchester united','tottenham','barcelona','real madrid','atletico madrid','bayern','paris saint germain','inter','ac milan','juventus','napoli','dortmund','leverkusen'];
 const isBig=n=>BIG.some(b=>norm(n).includes(b));
+const sc=n=>TOP.some(b=>norm(n).includes(b))?3:(isBig(n)?1:0);
 const fix=n=>FIX[n]||n;
 
 const day=864e5, now=new Date();
@@ -65,11 +67,16 @@ if(!okLeagues)throw new Error('Ma jiro horyaal la soo qaadi karay');
 
 // 1) Ciyaaraha todobaadkan (kooxaha waaweyn)
 const cand=[...all.values()].filter(f=>f.ms>=start&&f.ms<end)
-  .map(f=>({...f,n:[f.home,f.away].filter(isBig).length})).filter(f=>f.n);
+  .map(f=>({...f,n:sc(f.home)+sc(f.away)})).filter(f=>f.n>=3);
 cand.sort((a,b)=>b.n-a.n||a.ms-b.ms);
 const ex=(await db.collection('fixtures').where('week','==',week).get()).docs.map(d=>d.id);
-const pick=cand.filter(c=>ex.includes(c.id));
+const predicted=new Set((await db.collection('predictions').where('week','==',week).get()).docs.map(d=>d.data().fx));
+// Kuwa hore loo saadaaliyay ama bilaabmay waa la hayaa; kuwa kale waa la dib-doortaa
+const keep=ex.filter(id=>predicted.has(id)||(all.get(id)&&all.get(id).ms<Date.now()));
+const pick=cand.filter(c=>keep.includes(c.id));
 for(const c of cand){if(pick.length>=MAX)break;if(!pick.includes(c))pick.push(c)}
+const ids=pick.map(c=>c.id);
+for(const id of ex){if(!ids.includes(id)&&!keep.includes(id))await db.doc('fixtures/'+id).delete()}
 for(const c of pick){
   const base={home:c.home,away:c.away,homeCrest:c.homeCrest,awayCrest:c.awayCrest,hc:c.hc,ac:c.ac,
     league:c.league,kickoff:Timestamp.fromMillis(c.ms),week};
