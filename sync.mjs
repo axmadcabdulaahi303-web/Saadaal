@@ -31,23 +31,35 @@ const week='GW'+(startGw+Math.round((start-gwStart)/(7*day)));
 
 const all=new Map();
 let okLeagues=0;
+async function getEvents(slug,dates){
+  const url=`https://site.api.espn.com/apis/site/v2/sports/soccer/${slug}/scoreboard?dates=${dates}`;
+  const r=await fetch(url,{headers:{'user-agent':'Mozilla/5.0','accept':'application/json'}});
+  if(!r.ok){const t=(await r.text()).slice(0,150);throw new Error('HTTP '+r.status+' '+dates+' '+t)}
+  return (await r.json()).events||[];
+}
+function add(e,name){
+  const c=e.competitions?.[0];if(!c)return;
+  const h=c.competitors.find(x=>x.homeAway==='home'),a=c.competitors.find(x=>x.homeAway==='away');
+  if(!h||!a)return;
+  all.set(String(e.id),{id:String(e.id),home:fix(h.team.displayName),away:fix(a.team.displayName),
+    homeCrest:h.team.logo||'',awayCrest:a.team.logo||'',hc:h.team.abbreviation||'',ac:a.team.abbreviation||'',
+    league:name,ms:new Date(e.date).getTime(),done:e.status?.type?.completed===true,
+    hs:parseInt(h.score),as:parseInt(a.score)});
+}
 for(const [slug,name] of Object.entries(LEAGUES)){
+  let n=0;
   try{
-    const url=`https://site.api.espn.com/apis/site/v2/sports/soccer/${slug}/scoreboard?dates=${ymd(start-7*day)}-${ymd(end-day)}&limit=400`;
-    const r=await fetch(url);
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const j=await r.json();
-    for(const e of j.events||[]){
-      const c=e.competitions?.[0];if(!c)continue;
-      const h=c.competitors.find(x=>x.homeAway==='home'),a=c.competitors.find(x=>x.homeAway==='away');
-      if(!h||!a)continue;
-      all.set(String(e.id),{id:String(e.id),home:fix(h.team.displayName),away:fix(a.team.displayName),
-        homeCrest:h.team.logo||'',awayCrest:a.team.logo||'',hc:h.team.abbreviation||'',ac:a.team.abbreviation||'',
-        league:name,ms:new Date(e.date).getTime(),done:e.status?.type?.completed===true,
-        hs:parseInt(h.score),as:parseInt(a.score)});
+    const ev=await getEvents(slug,ymd(start-2*day)+'-'+ymd(end-day));
+    ev.forEach(e=>add(e,name));n=ev.length;okLeagues++;
+  }catch(err){
+    console.log(name,'range failed:',err.message,'- isku day maalin maalin');
+    for(let t=start-2*day;t<end;t+=day){
+      try{const ev=await getEvents(slug,ymd(t));ev.forEach(e=>add(e,name));n+=ev.length;}
+      catch(e2){console.log(name,ymd(t),e2.message)}
     }
-    okLeagues++;console.log(name,'OK',(j.events||[]).length);
-  }catch(err){console.log(name,'ERROR',err.message)}
+    if(n)okLeagues++;
+  }
+  console.log(name,'events:',n);
 }
 if(!okLeagues)throw new Error('Ma jiro horyaal la soo qaadi karay');
 
