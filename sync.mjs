@@ -48,20 +48,15 @@ function add(e,name){
     league:name,ms:new Date(e.date).getTime(),done:e.status?.type?.completed===true,
     hs:parseInt(h.score),as:parseInt(a.score)});
 }
+let errs=0;
 for(const [slug,name] of Object.entries(LEAGUES)){
-  let n=0;
-  try{
-    const ev=await getEvents(slug,ymd(start-2*day)+'-'+ymd(end-day));
-    ev.forEach(e=>add(e,name));n=ev.length;okLeagues++;
-  }catch(err){
-    console.log(name,'range failed:',err.message,'- isku day maalin maalin');
-    for(let t=start-2*day;t<end;t+=day){
-      try{const ev=await getEvents(slug,ymd(t));ev.forEach(e=>add(e,name));n+=ev.length;}
-      catch(e2){console.log(name,ymd(t),e2.message)}
-    }
-    if(n)okLeagues++;
+  let n=0,ok=0;
+  for(let t=start-2*day;t<end;t+=day){
+    try{const ev=await getEvents(slug,ymd(t));ev.forEach(e=>add(e,name));n+=ev.length;ok++}
+    catch(e2){errs++;console.log(name,ymd(t),e2.message)}
   }
-  console.log(name,'events:',n);
+  if(ok)okLeagues++;
+  console.log(name,'events:',n,'maalmo oo guuleystay:',ok);
 }
 if(!okLeagues)throw new Error('Ma jiro horyaal la soo qaadi karay');
 
@@ -76,7 +71,7 @@ const keep=ex.filter(id=>predicted.has(id)||(all.get(id)&&all.get(id).ms<Date.no
 const pick=cand.filter(c=>keep.includes(c.id));
 for(const c of cand){if(pick.length>=MAX)break;if(!pick.includes(c))pick.push(c)}
 const ids=pick.map(c=>c.id);
-for(const id of ex){if(!ids.includes(id)&&!keep.includes(id))await db.doc('fixtures/'+id).delete()}
+if(!errs)for(const id of ex){if(!ids.includes(id)&&!keep.includes(id))await db.doc('fixtures/'+id).delete()}
 for(const c of pick){
   const base={home:c.home,away:c.away,homeCrest:c.homeCrest,awayCrest:c.awayCrest,hc:c.hc,ac:c.ac,
     league:c.league,kickoff:Timestamp.fromMillis(c.ms),week};
